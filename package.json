@@ -9,7 +9,7 @@
     "url": "git+https://github.com/eiichi-worker/web_ai.git"
   },
   "author": "eiichi-worker",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/eiichi-worker/web_ai/issues"
   },
@@ -36,6 +36,7 @@
     "gulp-nunjucks-render": "^2.2.2",
     "nunjucks": "^3.0.1",
     "parcel-bundler": "^1.8.1",
-    "run-sequence": "^2.2.1"
+    "run-sequence": "^2.2.1",
+    "gift": "^0.10.2"
   }
 }
