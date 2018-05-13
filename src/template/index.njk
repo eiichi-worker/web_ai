@@ -1,0 +1,42 @@
+{% extends "_layout/default.njk" %}
+{% set pageTitle = "Decrements" %}
+
+{% block content_main %}
+  <div class="page-header header-filter clear-filter purple-filter" data-parallax="true">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 ml-auto mr-auto">
+          <div class="brand">
+            <h1>AI実験場</h1>
+            <h3>いろいろ実験結果を置いとく場所</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main main-raised">
+    <div class="section section-basic">
+      <div class="container">
+        <div class="title">
+          <h2>Tensorflow.jsで作ったもの</h2>
+          <p>Tensorflow.jsを使ってみる</p>
+        </div>
+        <!--  buttons -->
+        <div id="buttons" class="cd-section">
+          <div class="card" style="width: 20rem;">
+            <a href="./tfjs/mnist.html">
+              <img class="card-img-top" src="https://placehold.jp/350x240.png" alt="Card image cap">
+                <div class="card-body">
+                  <h4 class="card-title">MNISTサンプル</h4>
+                  <p class="card-text">MNISTの公式サンプルをやってみたやつ。手書きした数字を判定します。</p>
+                </div>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  {% endblock %}

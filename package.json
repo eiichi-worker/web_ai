@@ -1,0 +1,41 @@
+{
+  "name": "web_ai",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eiichi-worker/web_ai.git"
+  },
+  "author": "eiichi-worker",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eiichi-worker/web_ai/issues"
+  },
+  "homepage": "https://github.com/eiichi-worker/web_ai#readme",
+  "dependencies": {
+    "@tensorflow/tfjs": "0.10.3",
+    "vega-embed": "~3.0.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-runtime": "^6.26.0",
+    "babelify": "^8.0.0",
+    "browser-sync": "^2.24.4",
+    "browserify": "^16.2.2",
+    "del": "^3.0.0",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^7.0.1",
+    "gulp-exec": "^3.0.1",
+    "gulp-gh-pages": "^0.5.4",
+    "gulp-nunjucks-render": "^2.2.2",
+    "nunjucks": "^3.0.1",
+    "parcel-bundler": "^1.8.1",
+    "run-sequence": "^2.2.1"
+  }
+}

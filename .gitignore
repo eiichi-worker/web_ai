@@ -1,0 +1,6 @@
+gitignore_directory
+.vscode
+node_modules
+
+dist
+.publish
