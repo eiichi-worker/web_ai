@@ -4,8 +4,9 @@ var runSequence = require('run-sequence')
 var del = require('del')
 var browserSync = require('browser-sync')
 var reload = browserSync.reload
-var ghPages = require('gulp-gh-pages')
+var ghPages = require('gulp-gh-pages-will')
 var exec = require('gulp-exec');
+var sitemap = require('gulp-sitemap');
 
 gulp.task('default', function(callback) {
   return runSequence(
@@ -14,6 +15,7 @@ gulp.task('default', function(callback) {
       'es6',
       'static'
     ],
+    'sitemap',
     callback
   )
 })
@@ -25,6 +27,7 @@ gulp.task('deploy', function(callback) {
       'es6',
       'static'
     ],
+    'sitemap',
     'github-page-push',
     callback
   )
@@ -66,6 +69,16 @@ gulp.task('static', function() {
   return gulp.src('src/static/**/*').pipe(gulp.dest('dist/'))
 })
 
+gulp.task('sitemap', function () {
+  gulp.src('dist/**/*.html', {
+          read: false
+      })
+      .pipe(sitemap({
+          siteUrl: 'http://ai.noraneko.work'
+      }))
+      .pipe(gulp.dest('./dist'));
+});
+
 gulp.task('server', function() {
   browserSync({
     notify: false,
@@ -77,6 +90,7 @@ gulp.task('server', function() {
   gulp.watch('src/static/**/*', ['static'])
   gulp.watch('src/template/**/*', ['nunjucks'])
   gulp.watch('src/es6/**/*', ['es6'])
+  gulp.watch('dist/**/*.html', ['sitemap'])
   gulp.watch('dist/**/*', reload)
 })
 

@@ -32,11 +32,11 @@
     "gulp": "^3.9.1",
     "gulp-babel": "^7.0.1",
     "gulp-exec": "^3.0.1",
-    "gulp-gh-pages": "^0.5.4",
+    "gulp-gh-pages-will": "^0.5.5",
     "gulp-nunjucks-render": "^2.2.2",
+    "gulp-sitemap": "^5.1.0",
     "nunjucks": "^3.0.1",
     "parcel-bundler": "^1.8.1",
-    "run-sequence": "^2.2.1",
-    "gift": "^0.10.2"
+    "run-sequence": "^2.2.1"
   }
 }
