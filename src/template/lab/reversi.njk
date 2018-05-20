@@ -1,0 +1,49 @@
+{% extends "_layout/default.njk" %}
+{% set pageTitle = "リバーシ（Simpleに） | AI実験場" %}
+
+{% block content_main %}
+  <div class="page-header header-filter clear-filter purple-filter" data-parallax="true">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 ml-auto mr-auto">
+          <div class="brand">
+            <h1>リバーシ</h1>
+            <h3>AI組込み用のベースとなるリバーシ</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main main-raised">
+    <div class="section section-basic">
+      <div class="container">
+        <div class="title">
+          <h2>リバーシ</h2>
+        </div>
+        <style type="text/css">
+          #reversi-gui table {
+            border-collapse: collapse;
+            border: solid thick;
+            font-size:4rem
+          }
+          #reversi-gui colgroup,
+          #reversi-gui tbody {
+            border: solid medium;
+          }
+          #reversi-gui td {
+            border: solid thin;
+            height: 1.4em;
+            width: 1.4em;
+            text-align: center;
+            padding: 0;
+          }
+        </style>
+        <div id="reversi-gui-info"></div>
+        <div id="reversi-gui"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/game/reversi/index.js" type="text/javascript"></script>
+{% endblock %}
