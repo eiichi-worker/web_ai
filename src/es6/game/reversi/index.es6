@@ -21,7 +21,7 @@ class UserInterface {
   constructor (game, targetId) {
     this.game = game
     this.targetId = targetId
-    this.stone = ['', '⚫', '⚪']
+    this.stone = ['　', '⚫', '⚪']
   }
 
   makeReversiTable () {
