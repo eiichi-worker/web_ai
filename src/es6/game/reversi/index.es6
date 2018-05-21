@@ -28,12 +28,16 @@ class UserInterface {
     let target = document.getElementById(this.targetId)
     let table = document.createElement('table')
     let data = this.game.bord
+
+    // table.width = "100%"
     // console.log(this.bord.length)
 
     for (var i = 0; i < data.length; i++) {
       var tmpRow = document.createElement('tr')
       for (var j = 0; j < data[0].length; j++) {
         var tmpCell = document.createElement('td')
+        tmpCell.width = '5rem'
+        tmpCell.height = '5rem'
         tmpCell.innerText = this.stone[data[i][j]]
         // tmpCell.onclick = this.clickBord(i,j)
         tmpCell.id = i + '_' + j
@@ -62,9 +66,24 @@ class UserInterface {
     }
   }
 
-  updateInfo(){
-    var target = document.getElementById("reversi-gui-info")
-    target.innerText=this.stone[this.game.getTurn()]
+  updateInfo () {
+    // ターン数
+    document.getElementById('turn_count').innerText = 'ターン数：' + this.game.getTurnCount()
+
+    // 今のターン
+    var target = document.getElementById('turn')
+    target.innerText = 'ターン：' + this.stone[this.game.getTurn()]
+
+    // ProgressBar
+    var count1 = this.game.getCountStone(this.game.bord, 1)
+    var count2 = this.game.getCountStone(this.game.bord, 2)
+    console.log(count1)
+    console.log(count2)
+    document.getElementById('count_1').innerText = this.stone[1] + '：' + count1
+    document.getElementById('count_2').innerText = this.stone[2] + '：' + count2
+
+    document.getElementById('progress_1').style.width = (count1 / (count1 + count2) * 100) + '%'
+    document.getElementById('progress_2').style.width = (count2 / (count1 + count2) * 100) + '%'
   }
 
   clickBord (ui, game) {
@@ -118,7 +137,7 @@ class UserInterface {
 class Reversi {
   constructor () {
     this.turn = 1
-
+    this.turnCount = 1
     this.bord = [...Array(8)].map(() => Array(8).fill(0))
 
     this.bord[3][3] = 2
@@ -215,6 +234,7 @@ class Reversi {
   }
 
   changeTurn () {
+    this.turnCount++
     this.turn = this.turn == 1 ? 2 : 1
   }
 
@@ -222,8 +242,23 @@ class Reversi {
     return this.turn
   }
 
+  getTurnCount () {
+    return this.turnCount
+  }
+
   getRivalStoneId () {
     return this.turn == 1 ? 2 : 1
+  }
+
+  getCountStone (bord, stoneId) {
+    var count = 0
+    for (var rowIndex in bord) {
+      for (var colIndex in bord[rowIndex]) {
+        console.log(bord[rowIndex][colIndex] + ':' + stoneId)
+        count += (bord[rowIndex][colIndex] == stoneId) ? 1 : 0
+      }
+    }
+    return count
   }
 
 }
