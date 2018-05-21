@@ -60,7 +60,7 @@ class UserInterface {
       for (var j = 0; j < data[0].length; j++) {
         var id = i + '_' + j
         var target = document.getElementById(id)
-
+        target.style.background ="white"
         target.innerText = this.stone[data[i][j]]
       }
     }
@@ -84,6 +84,14 @@ class UserInterface {
 
     document.getElementById('progress_1').style.width = (count1 / (count1 + count2) * 100) + '%'
     document.getElementById('progress_2').style.width = (count2 / (count1 + count2) * 100) + '%'
+
+    // 置ける場所を表示
+    console.table(this.game.getCanPutPoint(this.game.bord, this.game.turn))
+    var canPutPoint = this.game.getCanPutPoint(this.game.bord, this.game.turn)
+    for (var index in canPutPoint) {
+      var id = canPutPoint[index][0] + '_' + canPutPoint[index][1]
+      document.getElementById(id).style.background ="#CCFFCC"
+    }
   }
 
   clickBord (ui, game) {
@@ -201,6 +209,12 @@ class Reversi {
     let nowColIndex = Number(tergetColIndex) + Number(directionCol)
     let stoneStack = []
 
+    // 置こうとしている場所に既に石がないか確認
+    if (!this.isOnBord(tergetRowIndex, tergetColIndex) || this.bord[tergetRowIndex][tergetColIndex] != 0) {
+      return []
+    }
+
+    // 指定方向に同じ色の石があるまで途中の石をスタックしていく
     while (this.isOnBord(nowRowIndex, nowColIndex)) {
       var nowStoneId = this.bord[nowRowIndex][nowColIndex]
       console.log('getTurneOverPoint:terget[' + tergetRowIndex + '][' + tergetColIndex + ']=' + tergetStoneId + ' now[' + nowRowIndex + '][' + nowColIndex + ']=' + nowStoneId)
@@ -223,6 +237,23 @@ class Reversi {
     }
 
     return []
+  }
+
+  /**
+   * 置ける場所を返す
+   */
+  getCanPutPoint (bord, stoneId) {
+    let stoneStack = []
+    for (var rowIndex in bord) {
+      for (var colIndex in bord[rowIndex]) {
+        console.log(bord[rowIndex][colIndex] + ':' + stoneId)
+        if (0 < this.getTurneOverPointAllDirections(rowIndex, colIndex, stoneId).length) {
+          stoneStack.push([rowIndex, colIndex])
+        }
+      }
+    }
+
+    return stoneStack
   }
 
   isOnBord (rowIndex, colIndex) {
