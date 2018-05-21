@@ -99,7 +99,9 @@
           #reversi-gui table {
             border-collapse: collapse;
             border: solid thick;
-            font-size:2rem
+            font-size: 2rem;
+            table-layout: fixd;
+            margin: auto;
           }
           #reversi-gui colgroup,
           #reversi-gui tbody {
@@ -107,13 +109,25 @@
           }
           #reversi-gui td {
             border: solid thin;
-            height: 1.4em;
-            width: 1.4em;
+            height: 3rem;
+            width: 3rem;
             text-align: center;
             padding: 0;
           }
+          #reversi-gui {
+            }
         </style>
-        <div id="reversi-gui-info"></div>
+        <div id="reversi-gui-info">
+          <div id="turn_count"></div>
+          <div id="turn"></div>
+          <div id="count_1"></div>
+          <div id="count_2"></div>
+          <div class="progress" style="height: 1rem">
+            <div id="progress_1" class="progress-bar" role="progressbar" style="width: 25%; background-color:darkgray" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+            
+            <div id="progress_2" class="progress-bar" role="progressbar" style="width: 25%; background-color:whitesmoke" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
         <div id="reversi-gui"></div>
       </div>
     </div>
