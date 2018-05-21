@@ -2,12 +2,16 @@
  * 
  */
 class GameMaster {
-  constructor () {
+  constructor() {
     this.game = new Reversi()
-    this.ui = new UserInterface(this.game, 'reversi-gui')
+    this.playerType = {
+      "プレイヤー": new PrayerHuman(),
+      "ランダム君": new PrayerAiRandom(),
+    }
+    this.ui = new UserInterface(this.game, this.playerType, 'reversi-gui')
   }
 
-  run () {
+  run() {
     console.log('開始')
     // UI準備
     this.ui.makeReversiTable()
@@ -18,13 +22,24 @@ class GameMaster {
  * UIとのつなぎ込み
  */
 class UserInterface {
-  constructor (game, targetId) {
+  constructor(game, playerType, targetId) {
     this.game = game
+    this.playerType = playerType
     this.targetId = targetId
     this.stone = ['　', '⚫', '⚪']
+
+    // プレイヤー選択
+    var selectBox = document.createElement("select")
+    selectBox.id = "player_select_2"
+    for (var player in this.playerType) {
+      var o = document.createElement("option")
+      o.innerText = player
+      selectBox.appendChild(o)
+    }
+    document.getElementById("player_select").appendChild(selectBox)
   }
 
-  makeReversiTable () {
+  makeReversiTable() {
     let target = document.getElementById(this.targetId)
     let table = document.createElement('table')
     let data = this.game.bord
@@ -53,20 +68,20 @@ class UserInterface {
     this.updateInfo()
   }
 
-  updateBord () {
+  updateBord() {
     let data = this.game.bord
 
     for (var i = 0; i < data.length; i++) {
       for (var j = 0; j < data[0].length; j++) {
         var id = i + '_' + j
         var target = document.getElementById(id)
-        target.style.background ="white"
+        target.style.background = 'white'
         target.innerText = this.stone[data[i][j]]
       }
     }
   }
 
-  updateInfo () {
+  updateInfo() {
     // ターン数
     document.getElementById('turn_count').innerText = 'ターン数：' + this.game.getTurnCount()
 
@@ -77,8 +92,8 @@ class UserInterface {
     // ProgressBar
     var count1 = this.game.getCountStone(this.game.bord, 1)
     var count2 = this.game.getCountStone(this.game.bord, 2)
-    console.log(count1)
-    console.log(count2)
+    // console.log(count1)
+    // console.log(count2)
     document.getElementById('count_1').innerText = this.stone[1] + '：' + count1
     document.getElementById('count_2').innerText = this.stone[2] + '：' + count2
 
@@ -90,12 +105,12 @@ class UserInterface {
     var canPutPoint = this.game.getCanPutPoint(this.game.bord, this.game.turn)
     for (var index in canPutPoint) {
       var id = canPutPoint[index][0] + '_' + canPutPoint[index][1]
-      document.getElementById(id).style.background ="#CCFFCC"
+      document.getElementById(id).style.background = '#CCFFCC'
     }
   }
 
-  clickBord (ui, game) {
-    return function (event) {
+  clickBord(ui, game) {
+    return function(event) {
       var target = event.target
       var stone = target.innerText
       var id = target.id
@@ -104,35 +119,71 @@ class UserInterface {
       // console.log("押した" +rowIndex +columnIndex)
       console.log('Click: [' + rowIndex + '][' + colIndex + ']=' + stone)
       if (stone == 0) {
-        game.setStone(rowIndex, colIndex, game.getTurn())
-        target.innerText = ui.stone[game.bord[rowIndex][colIndex]]
-        ui.updateBord()
-        ui.updateInfo()
+        if (game.setStone(rowIndex, colIndex, game.getTurn())) {
+          target.innerText = ui.stone[game.bord[rowIndex][colIndex]]
+          ui.updateBord()
+          ui.updateInfo()
+
+          // ライバルのTurn処理
+          ui.rivalTurn()
+        }
+
       }
     }
   }
 
-  mouseoverBord (ui, game) {
-    return function (event) {
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  async rivalTurn() {
+    var rivalName = document.getElementById("player_select_2").value
+    var rival = this.playerType[rivalName]
+
+    if (!rival.isInputAuto) {
+      console.log("自動操作ではありません")
+      return false
+    }
+
+    console.log("自動操作です")
+    await this.sleep(1000);
+
+    var putPoint = rival.selectPutPoint(this.game)
+    console.log(putPoint)
+
+    // 置く
+    var target = document.getElementById(putPoint[0] + "_" + putPoint[1])
+    this.game.setStone(putPoint[0], putPoint[1], this.game.getTurn())
+    target.innerText = this.stone[this.game.bord[putPoint[0]][putPoint[1]]]
+
+    this.updateBord()
+    this.updateInfo()
+
+    target.style.background = "#FFBBFF"
+
+  }
+
+  mouseoverBord(ui, game) {
+    return function(event) {
       var stone = event.target.innerText
       var id = event.target.id
       var rowIndex = id.split('_')[0]
       var colIndex = id.split('_')[1]
       // console.log("押した" +rowIndex +columnIndex)
-      console.log('mouseover: [' + rowIndex + '][' + colIndex + ']=' + stone)
+      // console.log('mouseover: [' + rowIndex + '][' + colIndex + ']=' + stone)
 
       event.target.style.border = 'solid thick'
     }
   }
 
-  mouseoutBord (ui, game) {
-    return function (event) {
+  mouseoutBord(ui, game) {
+    return function(event) {
       var stone = event.target.innerText
       var id = event.target.id
       var rowIndex = id.split('_')[0]
       var colIndex = id.split('_')[1]
       // console.log("押した" +rowIndex +columnIndex)
-      console.log('mouseout: [' + rowIndex + '][' + colIndex + ']=' + stone)
+      // console.log('mouseout: [' + rowIndex + '][' + colIndex + ']=' + stone)
 
       event.target.style.border = 'solid thin'
     }
@@ -143,7 +194,7 @@ class UserInterface {
  * Reversiのコア
  */
 class Reversi {
-  constructor () {
+  constructor() {
     this.turn = 1
     this.turnCount = 1
     this.bord = [...Array(8)].map(() => Array(8).fill(0))
@@ -155,15 +206,15 @@ class Reversi {
 
     console.table(this.bord)
 
-  // var canvas = document.getElementById(CANVAS_ID)
-  // if (canvas.getContext) {
-  //   var context = canvas.getContext('2d')
-  //   context.beginPath()
-  //   context.fillRect(20, 20, 80, 40)
-  // }
+    // var canvas = document.getElementById(CANVAS_ID)
+    // if (canvas.getContext) {
+    //   var context = canvas.getContext('2d')
+    //   context.beginPath()
+    //   context.fillRect(20, 20, 80, 40)
+    // }
   }
 
-  setStone (rowIndex, colIndex, stoneId) {
+  setStone(rowIndex, colIndex, stoneId) {
     console.table(this.bord)
     if (this.bord[rowIndex][colIndex] != 0) {
       return false
@@ -184,7 +235,7 @@ class Reversi {
     }
   }
 
-  getTurneOverPointAllDirections (rowIndex, colIndex, stoneId) {
+  getTurneOverPointAllDirections(rowIndex, colIndex, stoneId) {
     return []
       .concat(this.getTurneOverPointUnidirectional(rowIndex, colIndex, -1, 0, stoneId)) // ↑
       .concat(this.getTurneOverPointUnidirectional(rowIndex, colIndex, 1, 0, stoneId)) // ↓
@@ -204,7 +255,7 @@ class Reversi {
    * @param directionCol 
    * @param tergetStoneId 
    */
-  getTurneOverPointUnidirectional (tergetRowIndex, tergetColIndex, directionRow, directionCol, tergetStoneId) {
+  getTurneOverPointUnidirectional(tergetRowIndex, tergetColIndex, directionRow, directionCol, tergetStoneId) {
     let nowRowIndex = Number(tergetRowIndex) + Number(directionRow)
     let nowColIndex = Number(tergetColIndex) + Number(directionCol)
     let stoneStack = []
@@ -217,7 +268,7 @@ class Reversi {
     // 指定方向に同じ色の石があるまで途中の石をスタックしていく
     while (this.isOnBord(nowRowIndex, nowColIndex)) {
       var nowStoneId = this.bord[nowRowIndex][nowColIndex]
-      console.log('getTurneOverPoint:terget[' + tergetRowIndex + '][' + tergetColIndex + ']=' + tergetStoneId + ' now[' + nowRowIndex + '][' + nowColIndex + ']=' + nowStoneId)
+      // console.log('getTurneOverPoint:terget[' + tergetRowIndex + '][' + tergetColIndex + ']=' + tergetStoneId + ' now[' + nowRowIndex + '][' + nowColIndex + ']=' + nowStoneId)
       if (nowStoneId == 0) {
         // 隣が空白
         return []
@@ -233,7 +284,7 @@ class Reversi {
       nowRowIndex += Number(directionRow)
       nowColIndex += Number(directionCol)
 
-    // console.table(stoneStack)
+      // console.table(stoneStack)
     }
 
     return []
@@ -242,11 +293,11 @@ class Reversi {
   /**
    * 置ける場所を返す
    */
-  getCanPutPoint (bord, stoneId) {
+  getCanPutPoint(bord, stoneId) {
     let stoneStack = []
     for (var rowIndex in bord) {
       for (var colIndex in bord[rowIndex]) {
-        console.log(bord[rowIndex][colIndex] + ':' + stoneId)
+        // console.log(bord[rowIndex][colIndex] + ':' + stoneId)
         if (0 < this.getTurneOverPointAllDirections(rowIndex, colIndex, stoneId).length) {
           stoneStack.push([rowIndex, colIndex])
         }
@@ -256,42 +307,86 @@ class Reversi {
     return stoneStack
   }
 
-  isOnBord (rowIndex, colIndex) {
-    console.log(rowIndex)
-    console.log(colIndex)
-    console.log(this.bord.length)
-    console.log(this.bord[0].length)
+  isOnBord(rowIndex, colIndex) {
+    // console.log(rowIndex)
+    // console.log(colIndex)
+    // console.log(this.bord.length)
+    // console.log(this.bord[0].length)
     return (0 <= rowIndex && rowIndex < this.bord.length) && (0 <= colIndex && colIndex < this.bord[0].length)
   }
 
-  changeTurn () {
+  changeTurn() {
     this.turnCount++
-    this.turn = this.turn == 1 ? 2 : 1
+      this.turn = this.turn == 1 ? 2 : 1
   }
 
-  getTurn () {
+  getTurn() {
     return this.turn
   }
 
-  getTurnCount () {
+  getTurnCount() {
     return this.turnCount
   }
 
-  getRivalStoneId () {
+  getRivalStoneId() {
     return this.turn == 1 ? 2 : 1
   }
 
-  getCountStone (bord, stoneId) {
+  getCountStone(bord, stoneId) {
     var count = 0
     for (var rowIndex in bord) {
       for (var colIndex in bord[rowIndex]) {
-        console.log(bord[rowIndex][colIndex] + ':' + stoneId)
+        // console.log(bord[rowIndex][colIndex] + ':' + stoneId)
         count += (bord[rowIndex][colIndex] == stoneId) ? 1 : 0
       }
     }
     return count
   }
 
+}
+
+/**
+ * プレーヤーのベースクラス
+ */
+class PrayerBase {
+  constructor(stoneId) {
+    this.name = ''
+    this.stoneId = stoneId
+    this.isInputAuto = false
+  }
+
+  setName(name) {
+    this.name = name
+  }
+
+  getName() {
+    return this.name
+  }
+
+  getStoneId() {
+    return this.stoneId
+  }
+
+  selectPutPoint(game) {}
+}
+
+class PrayerHuman extends PrayerBase {
+  constructor(stoneId) {
+    super(stoneId)
+    this.name = 'プレイヤー'
+  }
+}
+
+class PrayerAiRandom extends PrayerBase {
+  constructor(stoneId) {
+    super(stoneId)
+    this.name = 'ランダム君（AI）'
+    this.isInputAuto = true
+  }
+  selectPutPoint(game) {
+    var point = game.getCanPutPoint(game.bord, game.getTurn())
+    return point[Math.floor(Math.random() * point.length)]
+  }
 }
 
 let gm = new GameMaster()
