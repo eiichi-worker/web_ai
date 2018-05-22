@@ -6,7 +6,7 @@ class GameMaster {
     this.game = new Reversi()
     this.playerType = {
       "プレイヤー": new PrayerHuman(),
-      "ランダム君": new PrayerAiRandom(),
+      "クロネコ(AI)": new PrayerAiRandom(),
     }
     this.ui = new UserInterface(this.game, this.playerType, 'reversi-gui')
   }
@@ -27,16 +27,22 @@ class UserInterface {
     this.playerType = playerType
     this.targetId = targetId
     this.stone = ['　', '⚫', '⚪']
+    this.player = []
 
     // プレイヤー選択
-    var selectBox = document.createElement("select")
-    selectBox.id = "player_select_2"
-    for (var player in this.playerType) {
-      var o = document.createElement("option")
-      o.innerText = player
-      selectBox.appendChild(o)
+    for (let i of [1, 2]) {
+      var selectBox = document.getElementById("player_select_" + i)
+
+      for (var player in this.playerType) {
+        var o = document.createElement("option")
+        o.innerText = player
+        selectBox.appendChild(o)
+      }
+
+      this.player[i] = selectBox.value
+      selectBox.addEventListener('change', this.changePlayerSelect(this, this.game), true)
     }
-    document.getElementById("player_select").appendChild(selectBox)
+
   }
 
   makeReversiTable() {
@@ -116,6 +122,13 @@ class UserInterface {
       var id = target.id
       var rowIndex = id.split('_')[0]
       var colIndex = id.split('_')[1]
+
+      // 自動操作判定
+      if (ui.playerType[ui.player[game.getTurn()]].isInputAuto) {
+        console.log("自動操作のターンです")
+        return
+      }
+
       // console.log("押した" +rowIndex +columnIndex)
       console.log('Click: [' + rowIndex + '][' + colIndex + ']=' + stone)
       if (stone == 0) {
@@ -124,43 +137,59 @@ class UserInterface {
           ui.updateBord()
           ui.updateInfo()
 
-          // ライバルのTurn処理
-          ui.rivalTurn()
+          // aiのTurn処理
+          ui.aiTurn()
         }
 
       }
     }
   }
 
-  sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
+  async aiTurn() {
+    // var rivalName = document.getElementById("player_select_2").value
+    var aiPlayer = this.playerType[this.player[this.game.getTurn()]]
 
-  async rivalTurn() {
-    var rivalName = document.getElementById("player_select_2").value
-    var rival = this.playerType[rivalName]
-
-    if (!rival.isInputAuto) {
-      console.log("自動操作ではありません")
+    if (!aiPlayer.isInputAuto) {
+      console.log(this.player[this.game.getTurn()] + "は自動操作ではありません")
       return false
     }
-
-    console.log("自動操作です")
+    
+    console.log(this.player[this.game.getTurn()] + "は自動操作です")
     await this.sleep(1000);
 
-    var putPoint = rival.selectPutPoint(this.game)
+    var putPoint = aiPlayer.selectPutPoint(this.game)
     console.log(putPoint)
 
     // 置く
     var target = document.getElementById(putPoint[0] + "_" + putPoint[1])
-    this.game.setStone(putPoint[0], putPoint[1], this.game.getTurn())
+    this.game.setStone(putPoint[0], putPoint[1], this.game.getTurn()) // おいて次のターン
     target.innerText = this.stone[this.game.bord[putPoint[0]][putPoint[1]]]
 
     this.updateBord()
     this.updateInfo()
 
+    // おいた場所に印をつける
     target.style.background = "#FFBBFF"
 
+    // 次のターンが自動操作なら再実行
+    if (this.playerType[this.player[this.game.getTurn()]].isInputAuto) {
+      this.aiTurn()
+    }
+
+  }
+
+  changePlayerSelect(ui, game) {
+    return function(event) {
+      var playerId = this.id.match(/([0-9])$/)[0]
+      ui.player[playerId] = this.value
+      console.log("Player" + playerId + "：" + ui.player[playerId])
+
+      // 切り替えタイミングが自分のターンなら実行
+      if (playerId == game.getTurn() && ui.playerType[ui.player[game.getTurn()]].isInputAuto) {
+        console.log("自動操作開始です")
+        ui.aiTurn()
+      }
+    }
   }
 
   mouseoverBord(ui, game) {
@@ -187,6 +216,10 @@ class UserInterface {
 
       event.target.style.border = 'solid thin'
     }
+  }
+
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
 
