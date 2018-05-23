@@ -5,10 +5,11 @@ class GameMaster {
   constructor() {
     this.game = new Reversi()
     this.playerType = {
-      "プレイヤー": new PrayerHuman(),
+      "プレイヤー(手動)": new PrayerHuman(),
       "クロネコ(AI)": new PrayerAiRandom(),
+      // "チャトラ(AI)": new PrayerAiPowerType(),
     }
-    this.ui = new UserInterface(this.game, this.playerType, 'reversi-gui')
+    this.ui = new UserInterface(this.game, this.playerType, 'reversi_gui')
   }
 
   run() {
@@ -28,6 +29,7 @@ class UserInterface {
     this.targetId = targetId
     this.stone = ['　', '⚫', '⚪']
     this.player = []
+    this.aiSleep = 1000
 
     // プレイヤー選択
     for (let i of [1, 2]) {
@@ -42,6 +44,15 @@ class UserInterface {
       this.player[i] = selectBox.value
       selectBox.addEventListener('change', this.changePlayerSelect(this, this.game), true)
     }
+
+    // Sleep
+    var buttonSleep = document.getElementById("ai_sleep")
+    buttonSleep.value = this.aiSleep
+    buttonSleep.addEventListener('change', this.changeSleep(this, this.game), true)
+
+    // スキップボタン
+    var buttonSkip = document.getElementById("button_pass")
+    buttonSkip.addEventListener('click', this.clickSkip(this, this.game), true)
 
   }
 
@@ -145,6 +156,14 @@ class UserInterface {
     }
   }
 
+  clickSkip(ui, game) {
+    return function(event) {
+      game.skipTurn()
+      ui.updateBord()
+      ui.updateInfo()
+    }
+  }
+
   async aiTurn() {
     // var rivalName = document.getElementById("player_select_2").value
     var aiPlayer = this.playerType[this.player[this.game.getTurn()]]
@@ -153,9 +172,9 @@ class UserInterface {
       console.log(this.player[this.game.getTurn()] + "は自動操作ではありません")
       return false
     }
-    
+
     console.log(this.player[this.game.getTurn()] + "は自動操作です")
-    await this.sleep(1000);
+    await this.sleep(this.aiSleep);
 
     var putPoint = aiPlayer.selectPutPoint(this.game)
     console.log(putPoint)
@@ -215,6 +234,13 @@ class UserInterface {
       // console.log('mouseout: [' + rowIndex + '][' + colIndex + ']=' + stone)
 
       event.target.style.border = 'solid thin'
+    }
+  }
+
+  changeSleep(ui, game) {
+    return function(event) {
+      ui.aiSleep = this.value
+      console.log("aiSleep" + ui.aiSleep)
     }
   }
 
@@ -348,6 +374,12 @@ class Reversi {
     return (0 <= rowIndex && rowIndex < this.bord.length) && (0 <= colIndex && colIndex < this.bord[0].length)
   }
 
+  skipTurn() {
+    if (0 == this.getCanPutPoint(this.bord, this.getTurn()).length) {
+      this.changeTurn()
+    }
+  }
+
   changeTurn() {
     this.turnCount++
       this.turn = this.turn == 1 ? 2 : 1
@@ -421,6 +453,18 @@ class PrayerAiRandom extends PrayerBase {
     return point[Math.floor(Math.random() * point.length)]
   }
 }
+
+// class PrayerAiPowerType extends PrayerBase {
+//   constructor(stoneId) {
+//     super(stoneId)
+//     this.name = 'パワー系（AI）'
+//     this.isInputAuto = true
+//   }
+//   selectPutPoint(game) {
+//     var point = game.getCanPutPoint(game.bord, game.getTurn())
+//     return point[Math.floor(Math.random() * point.length)]
+//   }
+// }
 
 let gm = new GameMaster()
 gm.run()

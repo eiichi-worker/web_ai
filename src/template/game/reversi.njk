@@ -1,0 +1,106 @@
+{% extends "_layout/default.njk" %}
+{% set pageTitle = "リバーシ（Simpleに） | AI実験場" %}
+
+{% block content_main %}
+  <div class="page-header header-filter clear-filter purple-filter" data-parallax="true">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 ml-auto mr-auto">
+          <div class="brand">
+            <h1>リバーシ</h1>
+            <h3>AI組込み用のベースとなるリバーシ</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main main-raised">
+    <div class="section section-basic">
+      <div class="container">
+        <div class="title">
+          <h2>リバーシ</h2>
+        </div>
+        <style type="text/css">
+          #reversi_gui table {
+            border-collapse: collapse;
+            border: solid thick;
+            font-size: 2rem;
+            table-layout: fixd;
+            margin: 1rem auto auto;
+          }
+          #reversi_gui colgroup,
+          #reversi_gui tbody {
+            border: solid medium;
+          }
+          #reversi_gui td {
+            border: solid thin;
+            height: 3rem;
+            width: 3rem;
+            text-align: center;
+            padding: 0;
+          }
+        </style>
+        <div id="reversi-gui-info">
+          <div class="row">
+            <div class="col"></div>
+            <div class="col"></div>
+            <div class="col">
+              sleep:<input type="number" id="ai_sleep" class="form-control" value="1000" step="100" min="0" max="10000"/>
+            </div>
+          </div>
+          <div class="row text-center">
+            <div class="col"></div>
+            <div class="col">
+              <div id="turn_count"></div>
+              <div id="turn"></div>
+            </div>
+            <div class="col"></div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm col-xs">
+              <div class="form-group">
+                <label for="exampleFormControlSelect1">⚫のプレイヤー</label>
+                <select id="player_select_1" class="form-control"></select>
+              </div>
+            </div>
+            <div class="col-sm"></div>
+            <div class="col-sm">
+              <div class="form-group">
+                <label for="exampleFormControlSelect1">⚪のプレイヤー</label>
+                <select id="player_select_2" class="form-control"></select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm col-xs">
+              <div id="count_1"></div>
+            </div>
+            <div class="col-sm"></div>
+            <div class="col-sm">
+              <div id="count_2"></div>
+            </div>
+          </div>
+          <div class="row text-center">
+            <div class="col">
+              <div class="progress" style="height: 1rem">
+                <div id="progress_1" class="progress-bar" role="progressbar" style="width: 25%; background-color:darkgray" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                {# <div id="progress_0" class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div> #}
+                <div id="progress_2" class="progress-bar" role="progressbar" style="width: 25%; background-color:whitesmoke" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="text-align:center">
+            <button id="button_pass" class="btn btn-info btn-sm">パス</button>
+          </div>
+        </div>
+        <div id="reversi_gui"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/game/reversi/index.js" type="text/javascript"></script>
+
+{% endblock %}
