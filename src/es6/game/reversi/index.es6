@@ -427,7 +427,7 @@ class Reversi {
   }
 
   skipTurn() {
-    if (0 == this.getEmptyPoint(this.bord).length) {
+    if (this.isGameEnd()) {
       return false
     }
 
