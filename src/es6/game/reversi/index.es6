@@ -54,6 +54,9 @@ class UserInterface {
     var buttonSkip = document.getElementById("button_pass")
     buttonSkip.addEventListener('click', this.clickSkip(this, this.game), true)
 
+    // 最初からボタン
+    var buttonRestart = document.getElementById("button_restart")
+    buttonRestart.addEventListener('click', this.clickRestart(this, this.game), true)
   }
 
   makeReversiTable() {
@@ -164,6 +167,15 @@ class UserInterface {
       ui.updateInfo()
     }
   }
+  
+  clickRestart(ui, game) {
+    return function(event) {
+      game.initializationGame()
+      ui.aiTurn()
+      ui.updateBord()
+      ui.updateInfo()
+    }
+  }
 
   async aiTurn() {
     // var rivalName = document.getElementById("player_select_2").value
@@ -255,23 +267,21 @@ class UserInterface {
  */
 class Reversi {
   constructor() {
+    this.initializationGame()
+  }
+
+  initializationGame() {
     this.turn = 1
     this.turnCount = 1
     this.bord = [...Array(8)].map(() => Array(8).fill(0))
 
+    // 初期配置
     this.bord[3][3] = 2
     this.bord[4][4] = 2
     this.bord[3][4] = 1
     this.bord[4][3] = 1
 
     console.table(this.bord)
-
-    // var canvas = document.getElementById(CANVAS_ID)
-    // if (canvas.getContext) {
-    //   var context = canvas.getContext('2d')
-    //   context.beginPath()
-    //   context.fillRect(20, 20, 80, 40)
-    // }
   }
 
   setStone(rowIndex, colIndex, stoneId) {
@@ -370,7 +380,7 @@ class Reversi {
   /**
    * 空の場所を返す
    */
-  getEmptyPoint(bord){
+  getEmptyPoint(bord) {
     let stoneStack = []
     for (var rowIndex in bord) {
       for (var colIndex in bord[rowIndex]) {
@@ -396,7 +406,7 @@ class Reversi {
     if (0 == this.getEmptyPoint(this.bord).length) {
       return false
     }
-    
+
     if (0 == this.getCanPutPoint(this.bord, this.getTurn()).length) {
       this.changeTurn()
     }
