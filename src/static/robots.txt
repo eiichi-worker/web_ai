@@ -1,3 +1,0 @@
-User-agent: *
-
-Disallow: /googlec62ed7cfd625f22c.html
