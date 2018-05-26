@@ -5,6 +5,7 @@ import {UserInterface} from "./user-interface"
 // Playerクラス
 import {PrayerHuman} from "./player/human"
 import {PrayerAiRandom} from "./player/ai-random"
+import {PrayerAiMin} from "./player/ai-min"
 import {PrayerAiPowerType} from "./player/ai-power-type"
 
 
@@ -17,6 +18,7 @@ class GameMaster {
     this.playerType = {
       "プレイヤー(手動)": new PrayerHuman(),
       "クロネコ(AI)": new PrayerAiRandom(),
+      "チビネコ(AI)": new PrayerAiMin(),
       // "チャトラ(AI)": new PrayerAiPowerType(),
     }
     this.ui = new UserInterface(this.game, this.playerType, 'reversi_gui')
