@@ -7,7 +7,7 @@ export class PrayerAiMin extends PrayerBase {
     this.isInputAuto = true
   }
   selectPutPoint(game) {
-    var point = shuffleArray(game.getCanPutPoint(game.bord, game.getTurn()))
+    var point = this.shuffleArray(game.getCanPutPoint(game.bord, game.getTurn()))
 
     console.log("AIデバッグ：name=" + this.name)
     console.table(point)
