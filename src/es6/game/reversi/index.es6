@@ -137,6 +137,11 @@ class UserInterface {
       var rowIndex = id.split('_')[0]
       var colIndex = id.split('_')[1]
 
+      if (game.isGameEnd()) {
+        console.log("ゲームは終わっています")
+        return false
+      }
+
       // 自動操作判定
       if (ui.playerType[ui.player[game.getTurn()]].isInputAuto) {
         console.log("自動操作のターンです")
@@ -167,7 +172,7 @@ class UserInterface {
       ui.updateInfo()
     }
   }
-  
+
   clickRestart(ui, game) {
     return function(event) {
       game.initializationGame()
@@ -181,6 +186,11 @@ class UserInterface {
     // var rivalName = document.getElementById("player_select_2").value
     var aiPlayer = this.playerType[this.player[this.game.getTurn()]]
 
+    if (this.game.isGameEnd()) {
+      console.log("ゲームは終わっています")
+      return false
+    }
+
     if (!aiPlayer.isInputAuto) {
       console.log(this.player[this.game.getTurn()] + "は自動操作ではありません")
       return false
@@ -188,6 +198,11 @@ class UserInterface {
 
     console.log(this.player[this.game.getTurn()] + "は自動操作です")
     await this.sleep(this.aiSleep);
+
+    // 置くところがなければパス
+    if (0 == this.game.getCanPutPoint(this.game.bord,this.game.getTurn()).length) {
+      this.clickSkip(this, this.game)({})
+    }
 
     var putPoint = aiPlayer.selectPutPoint(this.game)
     console.log(putPoint)
@@ -400,6 +415,15 @@ class Reversi {
     // console.log(this.bord.length)
     // console.log(this.bord[0].length)
     return (0 <= rowIndex && rowIndex < this.bord.length) && (0 <= colIndex && colIndex < this.bord[0].length)
+  }
+
+  isGameEnd(){
+    var tmpPutPoint = []
+    .concat(this.getCanPutPoint(this.bord, 1))
+    .concat(this.getCanPutPoint(this.bord, 2))
+
+
+    return tmpPutPoint.length == 0
   }
 
   skipTurn() {
