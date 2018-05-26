@@ -159,6 +159,7 @@ class UserInterface {
   clickSkip(ui, game) {
     return function(event) {
       game.skipTurn()
+      ui.aiTurn()
       ui.updateBord()
       ui.updateInfo()
     }
@@ -366,6 +367,23 @@ class Reversi {
     return stoneStack
   }
 
+  /**
+   * 空の場所を返す
+   */
+  getEmptyPoint(bord){
+    let stoneStack = []
+    for (var rowIndex in bord) {
+      for (var colIndex in bord[rowIndex]) {
+        // console.log(bord[rowIndex][colIndex] + ':' + stoneId)
+        if (0 == bord[rowIndex][colIndex]) {
+          stoneStack.push([rowIndex, colIndex])
+        }
+      }
+    }
+
+    return stoneStack
+  }
+
   isOnBord(rowIndex, colIndex) {
     // console.log(rowIndex)
     // console.log(colIndex)
@@ -375,6 +393,10 @@ class Reversi {
   }
 
   skipTurn() {
+    if (0 == this.getEmptyPoint(this.bord).length) {
+      return false
+    }
+    
     if (0 == this.getCanPutPoint(this.bord, this.getTurn()).length) {
       this.changeTurn()
     }
