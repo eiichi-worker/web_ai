@@ -13,6 +13,7 @@ gulp.task('default', function(callback) {
     'clean', [
       'nunjucks',
       'es6-tfjs-mnist',
+      'es6-tfjs-chest',
       'es6-game-reversi',
       'static'
     ],
@@ -26,6 +27,7 @@ gulp.task('deploy', function(callback) {
     'clean', [
       'nunjucks',
       'es6-tfjs-mnist',
+      'es6-tfjs-chest',
       'es6-game-reversi',
       'static'
     ],
@@ -85,6 +87,25 @@ gulp.task('es6-game-reversi', function() {
     .pipe(exec.reporter(reportOptions))
 })
 
+gulp.task('es6-tfjs-chest', function() {
+  var options = {
+    continueOnError: false, // default = false, true means don't emit error event
+    pipeStdout: false, // default = false, true means stdout is written to file.contents
+    src: ['src/es6/tfjs/chest/index.es6'], // content passed to lodash.template()
+    dist: "dist/js/tfjs/chest/" // content passed to lodash.template()
+  }
+  var reportOptions = {
+    err: true, // default = true, false means don't write err
+    stderr: true, // default = true, false means don't write stderr
+    stdout: true // default = true, false means don't write stdout
+  }
+
+  return gulp.src(options.src)
+    .pipe(exec('parcel build <%= file.path %> --no-minify -d <%= options.dist %>', options))
+    .pipe(exec.reporter(reportOptions))
+})
+
+
 gulp.task('static', function() {
   return gulp.src('src/static/**/*').pipe(gulp.dest('dist/'))
 })
@@ -111,6 +132,7 @@ gulp.task('server', function() {
   gulp.watch('src/template/**/*', ['nunjucks'])
   gulp.watch('src/es6/**/*', [
     'es6-tfjs-mnist',
+    'es6-tfjs-chest',
     'es6-game-reversi',
   ])
   gulp.watch('dist/**/*.html', ['sitemap'])
