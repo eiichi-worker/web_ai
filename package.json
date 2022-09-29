@@ -16,7 +16,7 @@
   "homepage": "https://github.com/eiichi-worker/web_ai#readme",
   "dependencies": {
     "@tensorflow/tfjs": "0.10.3",
-    "vega-embed": "~3.0.0"
+    "vega-embed": "~3.30.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
