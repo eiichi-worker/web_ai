@@ -29,7 +29,7 @@
     "browser-sync": "^2.24.4",
     "browserify": "^16.2.2",
     "del": "^3.0.0",
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.2",
     "gulp-babel": "^7.0.1",
     "gulp-exec": "^3.0.1",
     "gulp-gh-pages-will": "^0.5.5",
